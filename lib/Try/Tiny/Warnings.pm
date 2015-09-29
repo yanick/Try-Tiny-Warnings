@@ -94,7 +94,7 @@ our @EXPORT = qw/ try_warnings try_fatal_warnings catch_warnings /;
 
 sub try_fatal_warnings(&;@) { 
     my($sub,@rest) = @_;
-    local $SIG{__WARN__} = \&CORE::die;
+    local $SIG{__WARN__} = sub { die @_ };
     try { $sub->() } @rest;
 };
 

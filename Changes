@@ -4,6 +4,7 @@ Revision history for Try-Triny-Warnings
   [ API CHANGES ]
 
   [ BUG FIXES ]
+    - CORE::die wasn't playing nice with perl < 5.16
 
   [ DOCUMENTATION ]
 
