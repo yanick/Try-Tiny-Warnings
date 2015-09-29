@@ -4,7 +4,6 @@ Revision history for Try-Triny-Warnings
   [ API CHANGES ]
 
   [ BUG FIXES ]
-    - CORE::die wasn't playing nice with perl < 5.16
 
   [ DOCUMENTATION ]
 
@@ -13,6 +12,13 @@ Revision history for Try-Triny-Warnings
   [ NEW FEATURES ]
 
   [ STATISTICS ]
+
+0.0.2 2015-09-29
+  [ BUG FIXES ]
+    - CORE::die wasn't playing nice with perl < 5.16
+
+  [ STATISTICS ]
+    - code churn: 2 files changed, 18 insertions(+), 1 deletion(-)
 
 0.0.1 2015-09-24
   - First version, unleashed on an unsuspecting world.
