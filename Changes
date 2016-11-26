@@ -1,18 +1,11 @@
 Revision history for Try-Triny-Warnings
 
-{{$NEXT}}
-  [ API CHANGES ]
-
-  [ BUG FIXES ]
-
-  [ DOCUMENTATION ]
-
+0.1.0 2016-11-26
   [ ENHANCEMENTS ]
-  - Can import Try::Tiny's keywords via TTW.
-
-  [ NEW FEATURES ]
+    - Can import Try::Tiny's keywords via TTW.
 
   [ STATISTICS ]
+    - code churn: 5 files changed, 83 insertions(+), 15 deletions(-)
 
 0.0.2 2015-09-29
   [ BUG FIXES ]

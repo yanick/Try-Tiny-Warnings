@@ -1,5 +1,71 @@
 package Try::Tiny::Warnings;
+our $AUTHORITY = 'cpan:YANICK';
 # ABSTRACT: extension to Try::Tiny to also catch warnings
+$Try::Tiny::Warnings::VERSION = '0.1.0';
+
+use strict;
+use warnings;
+
+use Exporter;
+use Try::Tiny;
+
+use parent 'Exporter';
+
+our @EXPORT_OK = qw/ try catch finally /;
+
+our @EXPORT = qw/ 
+    try_warnings 
+    try_fatal_warnings 
+    catch_warnings 
+/;
+
+our %EXPORT_TAGS = (
+    'all' => [ @EXPORT, @EXPORT_OK ],
+);
+
+sub try_fatal_warnings(&;@) { 
+    my $sub = shift;
+
+    local $SIG{__WARN__} = sub { die @_ };
+
+    try { $sub->() } @_;
+};
+
+sub try_warnings(&;@) {  
+    my $sub = shift;
+
+    my @warnings;
+    local $SIG{__WARN__} = sub { push @warnings, @_ };
+
+    try { $sub->() } map {
+        my $x = $_;
+        ref $_ eq 'Try::Tiny::Warnings::Catch' 
+            ? finally { $x->(@warnings) }
+            : $_
+    } @_;
+
+};
+
+sub catch_warnings(&;@) {  
+    my $sub = shift;
+    return bless( $sub, 'Try::Tiny::Warnings::Catch' ), @_
+};
+
+1;
+
+__END__
+
+=pod
+
+=encoding UTF-8
+
+=head1 NAME
+
+Try::Tiny::Warnings - extension to Try::Tiny to also catch warnings
+
+=head1 VERSION
+
+version 0.1.0
 
 =head1 SYNOPSIS
 
@@ -35,7 +101,6 @@ package Try::Tiny::Warnings;
     catch_warnings {
         print "we warned with: $_" for @_;
     };
-
 
 =head1 DESCRIPTION
 
@@ -97,57 +162,15 @@ be imported via this module.
 
     use Try::Tiny::Warnings qw/ try catch catch_warnings /;
 
+=head1 AUTHOR
+
+Yanick Champoux <yanick@cpan.org>
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2015 by Yanick Champoux.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
 =cut
-
-use strict;
-use warnings;
-
-use Exporter;
-use Try::Tiny;
-
-use parent 'Exporter';
-
-our @EXPORT_OK = qw/ try catch finally /;
-
-our @EXPORT = qw/ 
-    try_warnings 
-    try_fatal_warnings 
-    catch_warnings 
-/;
-
-our %EXPORT_TAGS = (
-    'all' => [ @EXPORT, @EXPORT_OK ],
-);
-
-sub try_fatal_warnings(&;@) { 
-    my $sub = shift;
-
-    local $SIG{__WARN__} = sub { die @_ };
-
-    try { $sub->() } @_;
-};
-
-sub try_warnings(&;@) {  
-    my $sub = shift;
-
-    my @warnings;
-    local $SIG{__WARN__} = sub { push @warnings, @_ };
-
-    try { $sub->() } map {
-        my $x = $_;
-        ref $_ eq 'Try::Tiny::Warnings::Catch' 
-            ? finally { $x->(@warnings) }
-            : $_
-    } @_;
-
-};
-
-sub catch_warnings(&;@) {  
-    my $sub = shift;
-    return bless( $sub, 'Try::Tiny::Warnings::Catch' ), @_
-};
-
-1;
-
-
-
