@@ -3,8 +3,7 @@ package Try::Tiny::Warnings;
 
 =head1 SYNOPSIS
 
-    use Try::Tiny;
-    use Try::Tiny::Warnings;
+    use Try::Tiny::Warnings ':all';
 
     {
         package Foo;
@@ -80,6 +79,24 @@ Note that using C<catch_warnings> with C<try_fatal_warnings> is pointless.
 Also, because C<catch_warnings> is a C<finally> in disguise, it has to come after
 the regular C<catch> clause.
 
+=head2 Export
+
+By default, C<Try::Tiny::Warnings> exports C<try_fatal_warnings>, C<try_warnings>
+and C<catch_warnings>. For convenience, 
+L<Try::Tiny>'s C<try>, C<catch> and C<finally> can also 
+be imported via this module.
+
+    use Try::Tiny;
+    use Try::Tiny::Warnings;
+
+    # equivalent to 
+
+    use Try::Tiny::Warnings ':all';
+
+    # can be picky too
+
+    use Try::Tiny::Warnings qw/ try catch catch_warnings /;
+
 =cut
 
 use strict;
@@ -90,34 +107,44 @@ use Try::Tiny;
 
 use parent 'Exporter';
 
-our @EXPORT = qw/ try_warnings try_fatal_warnings catch_warnings /;
+our @EXPORT_OK = qw/ try catch finally /;
+
+our @EXPORT = qw/ 
+    try_warnings 
+    try_fatal_warnings 
+    catch_warnings 
+/;
+
+our %EXPORT_TAGS = (
+    'all' => [ @EXPORT, @EXPORT_OK ],
+);
 
 sub try_fatal_warnings(&;@) { 
-    my($sub,@rest) = @_;
+    my $sub = shift;
+
     local $SIG{__WARN__} = sub { die @_ };
-    try { $sub->() } @rest;
+
+    try { $sub->() } @_;
 };
 
 sub try_warnings(&;@) {  
-    my($sub,@rest) = @_;
+    my $sub = shift;
 
     my @warnings;
     local $SIG{__WARN__} = sub { push @warnings, @_ };
 
-    @rest = map {
+    try { $sub->() } map {
         my $x = $_;
         ref $_ eq 'Try::Tiny::Warnings::Catch' 
             ? finally { $x->(@warnings) }
             : $_
-    } @rest;
+    } @_;
 
-    try { $sub->() } @rest;
 };
 
 sub catch_warnings(&;@) {  
-    my( $sub, @rest ) = @_;
-    $sub = bless $sub, 'Try::Tiny::Warnings::Catch';
-    return( $sub, @rest );
+    my $sub = shift;
+    return bless( $sub, 'Try::Tiny::Warnings::Catch' ), @_
 };
 
 1;

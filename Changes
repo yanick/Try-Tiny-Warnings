@@ -8,6 +8,7 @@ Revision history for Try-Triny-Warnings
   [ DOCUMENTATION ]
 
   [ ENHANCEMENTS ]
+  - Can import Try::Tiny's keywords via TTW.
 
   [ NEW FEATURES ]
 

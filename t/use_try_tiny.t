@@ -3,7 +3,8 @@ use warnings;
 
 use Test::More tests => 4;
 
-use Try::Tiny::Warnings ':all';
+use Try::Tiny;
+use Try::Tiny::Warnings;
 
 use Test::Warnings;
 use Test::Deep;
